@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/effects/gnix">
+    <file>windowborder.vert</file>
+    <file>windowborder.frag</file>
+  </qresource>
+</RCC>

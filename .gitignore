@@ -1,0 +1,4 @@
+result
+result-*
+hosts/
+.pre-commit-config.yaml

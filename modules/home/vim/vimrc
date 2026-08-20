@@ -1,0 +1,130 @@
+"" vim: set filetype=vim
+
+"" Base Vim configuration. This file should define all or most *basic* Vim
+"" configuration that does not depend on any plugins or
+"" implementation-specific details. This file is intended to be *shared*
+"" across Vim, NeoVim, IDEA-Vim (JetBrains IDEs) and anything else that has
+"" Vim emulation that can load a vimrc file.
+
+"" General
+set history=1000
+set nocompatible
+set encoding=utf-8
+set scrolloff=20
+set showmode
+set showcmd
+set hidden
+set wildmenu
+set wildmode=list:longest
+set cursorline
+set ttyfast
+set nowrap
+set ruler
+set backspace=indent,eol,start
+set laststatus=2
+set colorcolumn=80
+set textwidth=80
+
+" Dir stuff
+set backupdir=~/.local/state/vim/backups//
+set directory=~/.local/state/vim/swap//
+set undodir=~/.local/state/vim/undo//
+
+" Enable both absolute and relative numbers
+set number
+set relativenumber
+augroup numbertoggle
+  autocmd!
+  " Turn off relative numbering only while typing (Insert mode)
+  autocmd InsertEnter * set norelativenumber
+  autocmd InsertLeave * set relativenumber
+augroup END
+
+" Always move by screen (display) lines so that wrapped lines look and feel like
+" normal lines.
+nnoremap j gj
+nnoremap k gk
+nnoremap <Down> gj
+nnoremap <Up> gk
+
+" When we do wrap lines, do it on word boundaries and show an indicator
+set linebreak
+set showbreak=↳\   " visually mark wrapped continuation
+
+"" Whitespace rules
+set tabstop=4
+set shiftwidth=4
+set softtabstop=0
+set noexpandtab
+set list
+set listchars=tab:▸ˍ,trail:·
+
+"" Searching
+set incsearch
+set gdefault
+
+"" Don't automatically share the clipboard with the system
+set clipboard=
+
+"" What to save in session:
+set sessionoptions=buffers,curdir,tabpages,winsize,help,globals,skiprtp,folds,options
+
+"" Local keys and such
+let mapleader=" "
+let maplocalleader="\\"
+
+"" Change cursor on mode
+:autocmd InsertEnter * set cul
+:autocmd InsertLeave * set nocul
+
+"" File-type highlighting and configuration
+syntax on
+filetype on
+filetype plugin on
+filetype indent on
+
+"" Make sure .editorconfig support is enabled
+let g:editorconfig = v:true
+
+"" Up and down using thumb on split keyboard
+nnoremap <BS> <Up>
+nnoremap <CR> <Down>
+xnoremap <BS> <Up>
+xnoremap <CR> <Down>
+
+"" Yank/Put using system clipboard
+xnoremap <Leader>y "+y
+nnoremap <Leader>p "+gp
+nnoremap <Leader>P "+gP
+
+"" Navigate around splits
+nnoremap <C-Left>  <C-w>h
+nnoremap <C-Down>  <C-w>j
+nnoremap <C-Up>    <C-w>k
+nnoremap <C-Right> <C-w>l
+
+"" Navigate buffers
+nnoremap <End> :bnext<cr>
+nnoremap <Home> :bprev<cr>
+
+" Keep visual selection while indenting:
+xnoremap < <gv
+xnoremap > >gv
+
+" Paste without yank in visual mode:
+xnoremap p "_dP
+
+" Move lines up and down in visual mode with <Shift>(up/down):
+xnoremap <S-Down> :m '>+1<CR>gv=gv
+xnoremap <S-Up> :m '<-2<CR>gv=gv
+
+" Delete characters without clobbering default register:
+nnoremap x "_x
+nnoremap X "_X
+
+" Save and quit in style!
+nnoremap ZZ :wqa<CR>
+
+" Enable modelines so Vim respects filetype hints in comments
+set modeline
+set modelines=5

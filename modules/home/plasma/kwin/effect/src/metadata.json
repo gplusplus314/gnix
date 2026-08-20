@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Authors": [{
+            "Email": "gerry@gerryhernandez.com",
+            "Name": "Gerry Hernandez"
+        }],
+        "Category": "Appearance",
+        "Description": "Custom KWin effects for gnix",
+        "Id": "gnix-effects",
+        "Name": "gnix effects"
+    }
+}

@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Installs gnix on any Linux or macOS machine on any machine Nix runs on: remote
+# boxes, devcontainers, a fresh laptop etc.. Works even when the
+# username/hostname aren't known in advance.
+#
+# Non-interactive (CI, or curl | bash with no terminal) installs the headless
+# CLI-only config. Interactive runs also offer to install & manage GUI apps
+# (default no).
+#
+# Usage:
+#   curl -fsSL https://raw.githubusercontent.com/gplusplus314/gnix/main/scripts/portable | bash
+#
+# Reads $USER/$HOME/system from the environment, hence --impure.
+set -euo pipefail
+
+DEFAULT_REF="github:gplusplus314/gnix"
+
+# Use the local checkout when running from inside the repo, GitHub otherwise.
+if SCRIPT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." 2>/dev/null && pwd)" \
+   && [[ -f "$SCRIPT_ROOT/flake.nix" ]]; then
+  REF="path:$SCRIPT_ROOT"
+else
+  REF="$DEFAULT_REF"
+fi
+
+# 1. Install Nix if absent (Determinate installer; enables nix-command+flakes).
+if ! command -v nix >/dev/null 2>&1; then
+  echo "==> installing Nix"
+  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
+    | sh -s -- install --no-confirm
+fi
+
+# Make nix reachable in this same shell, right after a fresh install.
+if ! command -v nix >/dev/null 2>&1; then
+  for p in /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh \
+           "$HOME/.nix-profile/etc/profile.d/nix.sh"; do
+    # shellcheck disable=SC1090
+    [[ -e "$p" ]] && { set +u; . "$p"; set -u; }
+  done
+fi
+command -v nix >/dev/null 2>&1 \
+  || { echo "nix not on PATH after install; open a new shell and re-run" >&2; exit 1; }
+
+# Choose a profile
+ATTR="portable"
+if [[ -t 1 && -r /dev/tty ]]; then
+  printf 'Also install & manage GUI apps? [y/N] '
+  read -r reply </dev/tty || reply=""
+  case "$reply" in
+    [yY] | [yY][eE][sS])
+      case "$(uname -s)" in
+        Darwin) ATTR="portable-darwin" ;;
+        Linux) ATTR="portable-linux-desktop" ;;
+        *) echo "no GUI profile for $(uname -s); staying headless" >&2 ;;
+      esac
+      ;;
+  esac
+fi
+
+# 3. Build and activate
+echo "==> building '$ATTR' from $REF"
+OUT="$(nix build --impure --no-link --print-out-paths \
+  --extra-experimental-features 'nix-command flakes' \
+  "${REF}#homeConfigurations.${ATTR}.activationPackage")"
+
+echo "==> activating"
+# Move any pre-existing unmanaged dotfile aside instead of aborting on it
+# (same effect as `home-manager switch -b backup`).
+HOME_MANAGER_BACKUP_EXT=backup "$OUT/activate"
+echo "Done. Open a new shell to use gnix."

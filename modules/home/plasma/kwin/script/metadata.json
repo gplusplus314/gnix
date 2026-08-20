@@ -1,0 +1,19 @@
+{
+  "KPackageStructure": "KWin/Script",
+  "KPlugin": {
+    "Authors": [
+      {
+        "Email": "gerry@gerryhernandez.com",
+        "Name": "Gerry Hernandez"
+      }
+    ],
+    "Description": "KWin scripts for the gnix dotfiles",
+    "Id": "gnix",
+    "Name": "gnix",
+    "Version": "1.0",
+    "Website": "https://github.com/gplusplus314/gnix"
+  },
+  "X-Plasma-API": "declarativescript",
+  "X-Plasma-API-Minimum-Version": "6.0",
+  "X-Plasma-MainScript": "ui/main.qml"
+}

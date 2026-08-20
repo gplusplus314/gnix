@@ -1,0 +1,15 @@
+{
+  "nixd": {
+    "nixpkgs": {
+      "expr": "import (builtins.getFlake \"${ROOT}\").inputs.nixpkgs {}"
+    },
+    "options": {
+      "nixos": {
+        "expr": "(builtins.getFlake \"${ROOT}\").nixosConfigurations.\"${HOST}\".options or {}"
+      },
+      "home-manager": {
+        "expr": "(builtins.getFlake \"${ROOT}\").homeConfigurations.\"${USER}@${HOST}\".options or {}"
+      }
+    }
+  }
+}

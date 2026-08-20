@@ -1,0 +1,18 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "gerry@gerryhernandez.com",
+                "Name": "Gerry Hernandez"
+            }
+        ],
+        "Category": "Windows and Tasks",
+        "Description": "Active virtual desktop shown as a purple dot in a numpad-shaped grid",
+        "Id": "gnix.virtualdesktopindicator",
+        "License": "MIT",
+        "Name": "Virtual Desktop Indicator",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
