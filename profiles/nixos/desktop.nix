@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   inputs,
   user,
@@ -15,7 +16,7 @@
     inputs.pia-desktop.nixosModules.pia-desktop
   ];
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
 
   hardware.bluetooth = {
     enable = true;
