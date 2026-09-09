@@ -26,5 +26,6 @@
   home.packages = with pkgs; [
     audacity
     libreoffice-qt
+    unstable.discord
   ];
 }
