@@ -64,5 +64,7 @@ in
 {
   xdg.configFile = builtins.listToAttrs (map autostartEntry apps);
 
+  programs.plasma.session.sessionRestore.restoreOpenApplicationsOnLogin = "startWithEmptySession";
+
   programs.plasma.window-rules = map desktopRule placed;
 }
