@@ -17,13 +17,13 @@
   ];
 
   boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
+  boot.consoleLogLevel = 3;
 
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
     settings = {
       General = {
-        Experimental = true;
         FastConnectable = false;
       };
       Policy = {
