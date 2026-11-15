@@ -5,8 +5,6 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -47,11 +45,14 @@
       ...
     }@inputs:
     let
+      gnixInputs = inputs;
+
       mkHome =
         {
           system,
           user,
           modules,
+          inputs ? gnixInputs,
         }:
         home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
@@ -202,10 +203,14 @@
 
       # Entry point for a private per-host flake, whose whole flake.nix is:
       #
-      #   outputs = { gnix, ... }: gnix.lib.mkHost {
+      #   outputs = { gnix, ... }@inputs: gnix.lib.mkHost {
+      #     inherit inputs;
       #     hostName = "<hostname>";
       #     nixos = ./default.nix;
       #   };
+      #
+      # `inputs` (optional) are the host flake's own inputs, merged over this
+      # flake's.
       #
       # `nixos` (a NixOS module) should configure
       # nixosConfigurations.<hostname>.
@@ -214,19 +219,22 @@
       # non-NixOS machines) should configure
       # homeConfigurations.<user>@<hostname>; its modules list may name this
       # flake's homeModules by string (e.g. "linux-desktop") alongside ordinary
-      # modules. Host modules get this flake's `inputs` and the flake itself as
-      # `gnix` via specialArgs.
+      # modules. Host modules get the merged `inputs` and this flake as `gnix`
+      # via specialArgs.
       lib.mkHost =
         {
           hostName,
           nixos ? null,
           home ? null,
+          inputs ? { },
         }:
         let
+          hostInputs = gnixInputs // inputs;
+
           nixosConfigurations = nixpkgs.lib.optionalAttrs (nixos != null) {
             ${hostName} = nixpkgs.lib.nixosSystem {
               specialArgs = {
-                inherit inputs;
+                inputs = hostInputs;
                 gnix = self;
               };
               modules = [
@@ -239,6 +247,7 @@
           homeConfigurations = nixpkgs.lib.optionalAttrs (home != null) {
             "${home.user}@${hostName}" = mkHome {
               inherit (home) system user;
+              inputs = hostInputs;
               modules = map (m: if builtins.isString m then self.homeModules.${m} else m) home.modules;
             };
           };

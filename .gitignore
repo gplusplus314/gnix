@@ -2,3 +2,4 @@ result
 result-*
 hosts/
 .pre-commit-config.yaml
+CLAUDE.local.md
